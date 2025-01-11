@@ -18,6 +18,27 @@
 *   Maven 或 Gradle 构建工具
 *   MySQL 数据库
 
+# 数据库创建表
+## **sql语句 示例 (mysql):**
+
+```sql
+CREATE TABLE `test_user` (
+  `id` bigint NOT NULL DEFAULT '1',
+  `username` varchar(256) DEFAULT NULL,
+  `userAccount` varchar(256) DEFAULT NULL,
+  `avatarUrl` varchar(1024) DEFAULT NULL,
+  `gender` tinyint DEFAULT '0',
+  `userPassword` varchar(512) DEFAULT NULL,
+  `phone` varchar(128) DEFAULT NULL,
+  `email` varchar(512) DEFAULT NULL,
+  `userState` int DEFAULT '0',
+  `createTime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updateTime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `isDelete` tinyint DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+```
+
 ## 数据库配置
 
 在 `application.properties` 或 `application.yml` 文件中配置数据库连接信息：

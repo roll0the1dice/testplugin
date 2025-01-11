@@ -235,9 +235,9 @@ spring:
 
 ## **生成代码**
 
-```bash
-  运行 `src/main/java/com/example/testplugin/plugin`目录下的`CustomizedPlugin.java`即可
-```
+
+运行 `src/main/java/com/example/testplugin/plugin`目录下的`CustomizedPlugin.java`即可
+
 
 ## **运行项目**
 **安装依赖**

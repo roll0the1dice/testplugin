@@ -18,8 +18,8 @@
 *   Maven 或 Gradle 构建工具
 *   MySQL 数据库
 
-# 数据库创建表
-## **sql语句 示例 (mysql):**
+## 数据库创建表
+### **sql语句 示例 (mysql):**
 
 ```sql
 CREATE TABLE `test_user` (

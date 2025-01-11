@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+
+
+<generatorConfiguration>
+    <!--<classPathEntry location="jar/my_customized_plugin-3.3.7.jar" />-->
+    <!-- JDBC connection /home/linux/UserProject/demo/src/main/java/com/example/demo/generator/ServiceGeneratorPlugin.java -->
+    <context id="MysqlContext" targetRuntime="MyBatis3">
+
+        <plugin type="com.example.testplugin.plugin.CustomizedPlugin" />
+        <plugin type="com.example.testplugin.plugin.RepositoryPlugin" >
+          <property name="targetPackage" value="com.example.testplugin.controller"/>
+        </plugin>
+        <plugin type="com.example.testplugin.plugin.NotFoundExceptionPlugin">
+          <property name="targetPackage" value="com.example.testplugin.controller"/>
+        </plugin>
+        <plugin type="com.example.testplugin.plugin.NotFoundAdvicePlugin">
+          <property name="targetPackage" value="com.example.testplugin.controller"/>
+        </plugin>
+        <plugin type="com.example.testplugin.plugin.ControllerPlugin">
+          <property name="targetPackage" value="com.example.testplugin.controller"/>
+        </plugin>
+
+
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/Test?useSSL=false&amp;serverTimezone=Asia/Shanghai"
+                        userId="admin"
+                        password="123456">
+                        <!-- <property name="nullCatalogMeansCurrent" value="true" /> -->
+        </jdbcConnection>
+
+        <!-- Java Model -->
+        <javaModelGenerator targetPackage="com.example.testplugin.model" targetProject="src/main/java">
+          <property name="enableSubPackages" value="true" />
+          <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <!-- SQL Map -->
+        <sqlMapGenerator targetPackage="com.example.testplugin.mapper" targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+
+        <!-- Java Client (Mapper) -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.example.testplugin.mapper" targetProject="src/main/java">
+          <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+        <!-- Database Table -->
+        <table schema="Test" tableName="test_user" domainObjectName="TestUser">
+          <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+        </table>
+
+    </context>
+
+</generatorConfiguration>

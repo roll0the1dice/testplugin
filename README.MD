@@ -1,6 +1,6 @@
 # 项目名称
 
-**项目简介：** 简要描述项目的功能和用途。例如：这是一个基于 Spring Boot 3 开发的示例项目，集成了 JPA 和 MyBatis，演示如何使用 MyBatis Generator 结合 Lombok 简化开发。
+**项目简介：** 这是一个基于 Spring Boot 3 开发的示例项目，集成了 JPA 和 MyBatis，演示如何使用 MyBatis Generator 结合 Lombok 简化开发。
 
 ## 使用技术栈
 

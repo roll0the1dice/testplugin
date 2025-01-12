@@ -56,11 +56,14 @@ public class RepositoryPlugin extends PluginAdapter {
         anInterface.addJavaDocLine(" */");
 
         anInterface.addImportedType(new FullyQualifiedJavaType("org.springframework.data.jpa.repository.JpaRepository"));
+        anInterface.addImportedType(new FullyQualifiedJavaType("org.springframework.data.jpa.repository.JpaSpecificationExecutor"));
         anInterface.addImportedType(new FullyQualifiedJavaType(modelClassName));
 
         // Create JpaRepository<ModelName, Long>
         FullyQualifiedJavaType repositoryType = new FullyQualifiedJavaType("org.springframework.data.jpa.repository.JpaRepository");
+        FullyQualifiedJavaType specificationExecutorType = new FullyQualifiedJavaType("org.springframework.data.jpa.repository.JpaSpecificationExecutor");
         FullyQualifiedJavaType longType = new FullyQualifiedJavaType("java.lang.Long");
+        specificationExecutorType.addTypeArgument(new FullyQualifiedJavaType(modelClassName));
      
         FullyQualifiedJavaType modelName = new FullyQualifiedJavaType(modelClassName);
         repositoryType.addTypeArgument(modelName);
@@ -68,6 +71,7 @@ public class RepositoryPlugin extends PluginAdapter {
 
         //String modelName = Arrays.asList(tmpList).get(tmpList.length - 1);
         anInterface.addSuperInterface(repositoryType);
+        anInterface.addSuperInterface(specificationExecutorType);
 
         // Use DefaultJavaFormatter to format the generated Java file
         DefaultJavaFormatter javaFormatter = new DefaultJavaFormatter();

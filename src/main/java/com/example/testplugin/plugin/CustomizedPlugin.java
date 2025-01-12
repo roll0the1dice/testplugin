@@ -53,6 +53,8 @@ public class CustomizedPlugin extends PluginAdapter {
                 if (field.getName().equals(javaProperty)) {
                     field.addAnnotation("@Id");
                     topLevelClass.addImportedType("jakarta.persistence.Id");
+                    field.addAnnotation("@GeneratedValue(strategy = GenerationType.IDENTITY)");
+                    topLevelClass.addImportedType("jakarta.persistence.GeneratedValue");
                 }
             }
         }
@@ -83,12 +85,16 @@ public class CustomizedPlugin extends PluginAdapter {
     protected void makeAnnotation(TopLevelClass topLevelClass) {
         topLevelClass.addImportedType(new FullyQualifiedJavaType("lombok.Data"));
         topLevelClass.addImportedType(new FullyQualifiedJavaType("jakarta.persistence.Entity"));
+        topLevelClass.addImportedType(new FullyQualifiedJavaType("jakarta.persistence.GeneratedValue"));
+        topLevelClass.addImportedType(new FullyQualifiedJavaType("jakarta.persistence.GenerationType"));
+        topLevelClass.addImportedType(new FullyQualifiedJavaType("org.hibernate.annotations.DynamicInsert"));
         topLevelClass.addAnnotation("@Data");
         topLevelClass.addAnnotation("@Entity");
+        topLevelClass.addAnnotation("@DynamicInsert");
 
         // remove getter and setter.
         topLevelClass.getMethods().clear();
-    }
+    } 
 
     // @Override
     // public List<GeneratedJavaFile> contextGenerateAdditionalJavaFiles(IntrospectedTable introspectedTable) {

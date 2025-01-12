@@ -21,6 +21,9 @@
         <plugin type="com.example.testplugin.plugin.NotFoundAdvicePlugin">
           <property name="targetPackage" value="com.example.testplugin.controller"/>
         </plugin>
+        <plugin type="com.example.testplugin.plugin.ModelAssemblerPlugin">
+          <property name="targetPackage" value="com.example.testplugin.controller"/>
+        </plugin>
         <plugin type="com.example.testplugin.plugin.ControllerPlugin">
           <property name="targetPackage" value="com.example.testplugin.controller"/>
         </plugin>

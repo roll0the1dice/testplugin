@@ -17,6 +17,8 @@ import org.mybatis.generator.api.dom.java.Method;
 import org.mybatis.generator.api.dom.java.Parameter;
 import org.mybatis.generator.api.dom.java.TopLevelClass;
 
+import org.springframework.http.ResponseEntity;
+
 public class ControllerPlugin extends PluginAdapter {
 
     private String targetPackage;
@@ -66,6 +68,9 @@ public class ControllerPlugin extends PluginAdapter {
         topLevelClass.addJavaDocLine(" * This is a generated interface for demonstration purposes.");
         topLevelClass.addJavaDocLine(" */");
 
+        topLevelClass.addStaticImport("org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn");
+        topLevelClass.addStaticImport("org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo");
+
         topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.web.bind.annotation.DeleteMapping"));
         topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.web.bind.annotation.GetMapping"));
         topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.web.bind.annotation.PathVariable"));
@@ -75,6 +80,13 @@ public class ControllerPlugin extends PluginAdapter {
         topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.web.bind.annotation.RestController"));
         topLevelClass.addImportedType(new FullyQualifiedJavaType(modelClassName));
         topLevelClass.addImportedType(new FullyQualifiedJavaType(packageName + "." + _modelName + "NotFoundException"));
+        topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.beans.factory.annotation.Autowired"));
+        topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.hateoas.EntityModel"));
+        topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.hateoas.CollectionModel"));
+        topLevelClass.addImportedType(new FullyQualifiedJavaType("java.util.List"));
+        topLevelClass.addImportedType(new FullyQualifiedJavaType("java.util.stream.Collectors"));
+        topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.http.ResponseEntity"));
+        topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.hateoas.IanaLinkRelations"));
 
         topLevelClass.addAnnotation("@RestController");
 
@@ -82,25 +94,45 @@ public class ControllerPlugin extends PluginAdapter {
         var field = new Field ("repository", new FullyQualifiedJavaType(_modelName + "Repository"));
         field.setVisibility(JavaVisibility.PRIVATE);
         field.addJavaDocLine("/** This is an example repository. */");
+        //field.addAnnotation("@Autowired");
         topLevelClass.addField(field);
+
+        // Add a private field
+        var field2 = new Field ("assembler", new FullyQualifiedJavaType(_modelName + "ModelAssembler"));
+        field2.setVisibility(JavaVisibility.PRIVATE);
+        field2.addJavaDocLine("/** This is an example modelAssembler. */");
+        //field2.addAnnotation("@Autowired");
+        topLevelClass.addField(field2);
 
         Method _constructor = new Method(_modelName + "Controller");
         _constructor.setConstructor(true);
         _constructor.setVisibility(JavaVisibility.PUBLIC);
+        _constructor.addAnnotation("@Autowired");
         //String newModelName = "new" + _modelName;
         Parameter parameter  = new Parameter(new FullyQualifiedJavaType(_modelName + "Repository"), "repository");
         _constructor.addParameter(parameter);
+        _constructor.addParameter(new Parameter(new FullyQualifiedJavaType(_modelName + "ModelAssembler"), "assembler"));
         _constructor.addBodyLine("this.repository = repository;");
+        _constructor.addBodyLine("this.assembler = assembler;");
         topLevelClass.addMethod(_constructor);
 
         Method _getAll = new Method("all");
         _getAll.addAnnotation(String.format("@GetMapping(\"/all_%s\")", _modelName.toLowerCase()));
         _getAll.setVisibility(JavaVisibility.PUBLIC);
-
-        FullyQualifiedJavaType ListType = new FullyQualifiedJavaType("java.util.List");
-        ListType.addTypeArgument(new FullyQualifiedJavaType(modelClassName));
-        _getAll.setReturnType(ListType);
-        _getAll.addBodyLine("return repository.findAll();");
+        FullyQualifiedJavaType _retTypeForOne = new FullyQualifiedJavaType("org.springframework.hateoas.CollectionModel");
+        FullyQualifiedJavaType _entityType = new FullyQualifiedJavaType("org.springframework.hateoas.EntityModel");
+        _entityType.addTypeArgument(new FullyQualifiedJavaType(modelClassName));
+        _retTypeForOne.addTypeArgument(_entityType);
+        _getAll.setReturnType(_retTypeForOne);
+        String[] _tmpParameters = {String.format("List<%s> %s = repository.findAll().stream()", _entityType.getShortName(), _modelName.toLowerCase()), 
+                                    ".map(assembler::toModel)",
+                                    ".collect(Collectors.toList());",
+                                    String.format("return CollectionModel.of(%s, linkTo(methodOn(%sController.class).all()).withSelfRel());", _modelName.toLowerCase(), _modelName)};
+        // 将数组转换为 List<String>
+        List<String> _tmpstringList = Arrays.asList(_tmpParameters);
+        // 将 List<String> 赋值给 Collection<String>
+        Collection<String> _tmpstringCollection = _tmpstringList;
+        _getAll.addBodyLines(_tmpstringCollection);
         topLevelClass.addMethod(_getAll);
         
         Method _saveNew = new Method("create");
@@ -120,9 +152,12 @@ public class ControllerPlugin extends PluginAdapter {
         parameter  = new Parameter(new FullyQualifiedJavaType("java.lang.Long"), "id");
         parameter.addAnnotation("@PathVariable");
         _getOne.addParameter(parameter);
-        _getOne.setReturnType(new FullyQualifiedJavaType(modelClassName));
-        String[] strParameter2 = {"return repository.findById(id)", 
-                                    String.format(".orElseThrow(() -> new %sNotFoundException(id));", _modelName)};
+        _retTypeForOne = new FullyQualifiedJavaType("org.springframework.hateoas.EntityModel");
+        _retTypeForOne.addTypeArgument(new FullyQualifiedJavaType(modelClassName));
+        _getOne.setReturnType(_retTypeForOne);
+        String[] strParameter2 = {String.format("%s %s = repository.findById(id)", _modelName, _modelName.toLowerCase()), 
+                                    String.format(".orElseThrow(() -> new %sNotFoundException(id));", _modelName),
+                                String.format("return assembler.toModel(%s);", _modelName.toLowerCase())};
         // 将数组转换为 List<String>
         List<String> stringList = Arrays.asList(strParameter2);
         // 将 List<String> 赋值给 Collection<String>
@@ -139,14 +174,18 @@ public class ControllerPlugin extends PluginAdapter {
         parameter  = new Parameter(new FullyQualifiedJavaType("java.lang.Long"), "id");
         parameter.addAnnotation("@PathVariable");
         _replace.addParameter(parameter);
-        _replace.setReturnType(new FullyQualifiedJavaType(modelClassName));
-        String[] strParameter3 = {"return repository.findById(id)", 
+        _replace.setReturnType(new FullyQualifiedJavaType("ResponseEntity<?> "));
+        String[] strParameter3 = {String.format("%s _updateModel = repository.findById(id)", _modelName, _modelName.toLowerCase()), 
                                     String.format(".map(%s -> {", "_new" + _modelName),
                                     String.format("return repository.save(%s);", "_new" + _modelName),
                                     "})",
                                     ".orElseGet(() -> {",
                                     String.format("return repository.save(%s);", "new" + _modelName),
-                                    "});"};
+                                    "});",
+                                    String.format("%s entityModel = assembler.toModel(_updateModel);", _entityType.getShortName()),
+                                    "return ResponseEntity",
+                                    ".created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())",
+                                    ".body(entityModel);"};
         // 将数组转换为 List<String>
         List<String> stringList3 = Arrays.asList(strParameter3);
         // 将 List<String> 赋值给 Collection<String>
@@ -162,6 +201,8 @@ public class ControllerPlugin extends PluginAdapter {
         parameter.addAnnotation("@PathVariable");
         _delete.addParameter(parameter);
         _delete.addBodyLine("repository.deleteById(id);");
+        _delete.addBodyLine("return ResponseEntity.noContent().build();");
+        _delete.setReturnType(new FullyQualifiedJavaType("ResponseEntity<?>"));
         topLevelClass.addMethod(_delete);
 
         // Use DefaultJavaFormatter to format the generated Java file

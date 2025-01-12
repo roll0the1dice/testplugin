@@ -24,6 +24,18 @@
         <plugin type="com.example.testplugin.plugin.ModelAssemblerPlugin">
           <property name="targetPackage" value="com.example.testplugin.controller"/>
         </plugin>
+        <plugin type="com.example.testplugin.plugin.SpecsPlugin">
+          <property name="targetPackage" value="com.example.testplugin.controller"/>
+        </plugin>
+        <plugin type="com.example.testplugin.plugin.BaseServicePlugin">
+          <property name="targetPackage" value="com.example.testplugin.controller"/>
+        </plugin>
+        <plugin type="com.example.testplugin.plugin.ServicePlugin">
+          <property name="targetPackage" value="com.example.testplugin.controller"/>
+        </plugin>
+        <plugin type="com.example.testplugin.plugin.ServiceImplPlugin">
+          <property name="targetPackage" value="com.example.testplugin.controller"/>
+        </plugin>
         <plugin type="com.example.testplugin.plugin.ControllerPlugin">
           <property name="targetPackage" value="com.example.testplugin.controller"/>
         </plugin>

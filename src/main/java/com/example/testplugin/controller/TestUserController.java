@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * This is a generated interface for demonstration purposes.
  */
 @RestController
+@RequestMapping("/testuser")
 public class TestUserController {
     /** This is an example service. */
     private TestUserServiceImpl service;
@@ -26,27 +28,27 @@ public class TestUserController {
         this.service = service;
     }
 
-    @GetMapping("/all_testuser")
+    @GetMapping("/all")
     public CollectionModel<EntityModel<TestUser>> all() {
         return service.all();
     }
 
-    @PostMapping("/testuser")
+    @PostMapping("/create")
     public TestUser create(@RequestBody TestUser newTestUser) {
         return service.create(newTestUser);
     }
 
-    @GetMapping("/testuser/{id}")
+    @GetMapping("/one/{id}")
     public EntityModel<TestUser> one(@PathVariable Long id) {
         return service.one(id);
     }
 
-    @PutMapping("/testuser/{id}")
+    @PutMapping("/replaceTestUser/{id}")
     public ResponseEntity<?> replaceTestUser(@RequestBody TestUser newTestUser, @PathVariable Long id) {
         return service.replaceTestUser(newTestUser,id);
     }
 
-    @DeleteMapping("/testuser/{id}")
+    @DeleteMapping("/deleteTestUser/{id}")
     public ResponseEntity<?> deleteTestUser(@PathVariable Long id) {
         return service.deleteTestUser(id);
     }

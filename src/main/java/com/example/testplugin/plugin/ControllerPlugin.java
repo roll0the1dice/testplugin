@@ -86,9 +86,10 @@ public class ControllerPlugin extends PluginAdapter {
         //topLevelClass.addImportedType(new FullyQualifiedJavaType("java.util.List"));
         //topLevelClass.addImportedType(new FullyQualifiedJavaType("java.util.stream.Collectors"));
         topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.http.ResponseEntity"));
-        //topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.hateoas.IanaLinkRelations"));
+        topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.web.bind.annotation.RequestMapping"));
 
         topLevelClass.addAnnotation("@RestController");
+        topLevelClass.addAnnotation("@RequestMapping(\"/" + _modelName.toLowerCase() + "\")");
 
         // Add a private field
         var field = new Field ("service", new FullyQualifiedJavaType(_modelName + "ServiceImpl"));
@@ -113,7 +114,7 @@ public class ControllerPlugin extends PluginAdapter {
         topLevelClass.addMethod(_constructor);
 
         Method _getAll = new Method("all");
-        _getAll.addAnnotation(String.format("@GetMapping(\"/all_%s\")", _modelName.toLowerCase()));
+        _getAll.addAnnotation(String.format("@GetMapping(\"/%s\")", _getAll.getName()));
         _getAll.setVisibility(JavaVisibility.PUBLIC);
         FullyQualifiedJavaType _retTypeForOne = new FullyQualifiedJavaType("org.springframework.hateoas.CollectionModel");
         FullyQualifiedJavaType _entityType = new FullyQualifiedJavaType("org.springframework.hateoas.EntityModel");
@@ -124,7 +125,7 @@ public class ControllerPlugin extends PluginAdapter {
         topLevelClass.addMethod(_getAll);
         
         Method _saveNew = new Method("create");
-        _saveNew.addAnnotation(String.format("@PostMapping(\"/%s\")", _modelName.toLowerCase()));
+        _saveNew.addAnnotation(String.format("@PostMapping(\"/%s\")", _saveNew.getName()));
         _saveNew.setVisibility(JavaVisibility.PUBLIC);
         //String newModelName = "new" + _modelName;
         Parameter parameter  = new Parameter(new FullyQualifiedJavaType(modelClassName), "new" + _modelName);
@@ -135,7 +136,7 @@ public class ControllerPlugin extends PluginAdapter {
         topLevelClass.addMethod(_saveNew);
 
         Method _getOne = new Method("one");
-        _getOne.addAnnotation(String.format("@GetMapping(\"/%s/{id}\")", _modelName.toLowerCase()));
+        _getOne.addAnnotation(String.format("@GetMapping(\"/%s/{id}\")", _getOne.getName()));
         _getOne.setVisibility(JavaVisibility.PUBLIC);
         parameter  = new Parameter(new FullyQualifiedJavaType("java.lang.Long"), "id");
         parameter.addAnnotation("@PathVariable");
@@ -147,7 +148,7 @@ public class ControllerPlugin extends PluginAdapter {
         topLevelClass.addMethod(_getOne);        
 
         Method _replace = new Method("replace" + _modelName);
-        _replace.addAnnotation(String.format("@PutMapping(\"/%s/{id}\")", _modelName.toLowerCase()));
+        _replace.addAnnotation(String.format("@PutMapping(\"/%s/{id}\")", _replace.getName()));
         _replace.setVisibility(JavaVisibility.PUBLIC);
         parameter  = new Parameter(new FullyQualifiedJavaType(modelClassName), "new" + _modelName);
         parameter.addAnnotation("@RequestBody");
@@ -160,7 +161,7 @@ public class ControllerPlugin extends PluginAdapter {
         topLevelClass.addMethod(_replace);              
 
         Method _delete = new Method("delete" + _modelName);
-        _delete.addAnnotation(String.format("@DeleteMapping(\"/%s/{id}\")", _modelName.toLowerCase()));
+        _delete.addAnnotation(String.format("@DeleteMapping(\"/%s/{id}\")", _delete.getName()));
         _delete.setVisibility(JavaVisibility.PUBLIC);
         //String newModelName = "new" + _modelName;
         parameter  = new Parameter(new FullyQualifiedJavaType("java.lang.Long"), "id");

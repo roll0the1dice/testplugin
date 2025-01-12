@@ -8,9 +8,9 @@ import org.springframework.data.jpa.domain.Specification;
  * Both keywords, namely Field and FieldKey in the method, should be manually modified.
  */
 public class TestUserSpecs {
-    public static Specification<TestUser> equalByUsername(String fieldValue) {
+    public static Specification<TestUser> equalByField(String fieldValue) {
         return (root, query, builder) -> {
-            return builder.equal(root.get("username"), fieldValue);
+            return builder.equal(root.get("fieldKey"), fieldValue);
         };
     }
 

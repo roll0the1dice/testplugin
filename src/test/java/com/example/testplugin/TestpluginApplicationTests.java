@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.example.testplugin.controller.CustomPredicate;
 import com.example.testplugin.controller.TestUserServiceImpl;
 import com.example.testplugin.model.TestUser;
 
@@ -12,14 +13,13 @@ import com.example.testplugin.model.TestUser;
 class TestpluginApplicationTests {
 	@Autowired
 	private TestUserServiceImpl myService;	
-	//@Test
-	// void contextLoads() {
-	// 	TestUser newTestUser = new TestUser();
-	// 	newTestUser.setUsername("user123");
-	// 	newTestUser.setUserpassword("password123");
-	// 	var resulut = myService.registerUser(newTestUser);
-	// 	System.out.println(resulut);
-	// 	Assertions.assertThat(resulut).isEqualTo("用户注册成功");
-	// }
-
+	@Test
+	void contextLoads() {
+		TestUser newTestUser = new TestUser();
+		newTestUser.setUsername("user123");
+		newTestUser.setUserpassword("password1231");
+		var resulut = myService.registerUser(newTestUser);
+		System.out.println(resulut);
+		Assertions.assertThat(resulut).isEqualTo("用户注册成功");
+	}
 }

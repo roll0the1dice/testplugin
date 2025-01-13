@@ -1,0 +1,156 @@
+package com.example.testplugin.controller;
+
+import com.example.testplugin.model.TestUser;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.antlr.v4.runtime.atn.SemanticContext.AND;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.Nullable;
+
+/**
+ * This is a generated Specs for demonstration purposes.
+ * Both keywords, namely Field and FieldKey in the method, should be manually modified.
+ */
+public class CustomSpecs implements Specification<TestUser> {
+
+    private String field;         // 查询字段
+    private Object value;         // 查询值
+    private Operator operator;    // 查询操作符
+
+    private final int AND = 0;
+    private final int OR = 1;
+
+    public List<Specification<TestUser>> specs = new LinkedList<Specification<TestUser>>();
+    public List<Integer> boolOps = new LinkedList<Integer>();
+
+    public CustomSpecs() {
+
+    }
+
+    public CustomSpecs(String field, Object value, Operator operator) {
+        this.field = field;
+        this.value = value;
+        this.operator = operator;
+    }
+
+    // 操作符枚举
+    public enum Operator {
+        EQUAL, LIKE, GREATER_THAN, LESS_THAN, IN
+    }
+    
+    public String getField() {
+        return field;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public Operator getOperator() {
+        return operator;
+    }
+
+    public void setOperator(Operator op) {
+        this.operator = op;
+    }
+
+    public void setField(String field) {
+        this.field = field;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
+    }
+  
+    public Predicate _toJpaPredicate(CriteriaBuilder cb, Root<?> root) {
+        switch (getOperator()) {
+            case EQUAL:
+                return cb.equal(root.get(getField()), getValue());
+            case LIKE:
+                return cb.like(root.get(getField()), "%" + getValue() + "%");
+            case GREATER_THAN:
+                return cb.greaterThan(root.get(getField()), (Comparable) getValue());
+            case LESS_THAN:
+                return cb.lessThan(root.get(getField()), (Comparable) getValue());
+            case IN:
+                CriteriaBuilder.In<Object> in = cb.in(root.get(getField()));
+                if (getValue() instanceof Collection) {
+                    for (Object value : (Collection<?>) getValue()) {
+                        in.value(value);
+                    }
+                }
+                return in;
+            default:
+                throw new UnsupportedOperationException("Unsupported operator: " + getOperator());
+        }
+    }
+
+    public CustomSpecs _and() {
+      if (boolOps.size() < specs.size())
+        boolOps.add(AND);
+
+        return this;
+    }
+
+    public CustomSpecs _or() {
+      if (boolOps.size() < specs.size())
+        boolOps.add(OR);
+
+        return this;
+    }
+
+    public CustomSpecs _equal(String fieldKey, String fieldValue) {
+        setField(fieldKey);
+        setValue(fieldValue);
+        setOperator(Operator.EQUAL);
+
+        specs.add((root, query, builder) -> {
+            return  _toJpaPredicate(builder, root);
+        });
+
+        if (boolOps.size() < specs.size())
+            boolOps.add(AND);
+
+        return this;
+    }
+
+    public Specification<TestUser> executeQuery() {
+        // init blank Specification
+        Specification<TestUser> combinedSpec = Specification.where(null);
+
+        // iterate Specification List
+        assert(specs.size() == boolOps.size());
+
+        for (int i = 0; i < specs.size() && i < boolOps.size(); i++) {
+          var spec = specs.remove(0);
+          var op = boolOps.remove(0);
+          switch (op) {
+            case OR:
+              combinedSpec = combinedSpec.or(spec);
+              break;
+            case AND:
+            default:
+              combinedSpec = combinedSpec.and(spec);
+              break;
+          }
+        }
+
+        return combinedSpec;
+    }
+
+    @Override
+    @Nullable
+    public Predicate toPredicate(Root<TestUser> root, @Nullable CriteriaQuery<?> query,
+            CriteriaBuilder criteriaBuilder) {
+        // TODO Auto-generated method stub
+        return _toJpaPredicate(criteriaBuilder, root);
+    }
+}

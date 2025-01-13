@@ -34,9 +34,10 @@ public class MyService extends TestUserService {
         if (ValidationUtil.hasSpecialCharacters(newTestUser.getUserpassword())) {
             return "密码不能包含特殊字符";
         }
-
+        CustomSpecs<TestUser> customSpecs = new CustomSpecs<TestUser>();
+        customSpecs._equal("username", newTestUser.getUsername())._equal("userpassword", newTestUser.getUserpassword());
         // 检查用户名是否已经存在
-        if (!repository.findAll(TestUserSpecs.equalByUsername(newTestUser.getUsername())).isEmpty()) {
+        if (!repository.findAll(customSpecs._executeQuery()).isEmpty()) {
             return "用户名已存在";
         }
 

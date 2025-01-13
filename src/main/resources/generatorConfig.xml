@@ -24,7 +24,7 @@
         <plugin type="com.example.testplugin.plugin.ModelAssemblerPlugin">
           <property name="targetPackage" value="com.example.testplugin.controller"/>
         </plugin>
-        <plugin type="com.example.testplugin.plugin.SpecsPlugin">
+        <plugin type="com.example.testplugin.plugin.CustomSpecsPlugin">
           <property name="targetPackage" value="com.example.testplugin.controller"/>
         </plugin>
         <plugin type="com.example.testplugin.plugin.BaseServicePlugin">

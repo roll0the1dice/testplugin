@@ -255,8 +255,83 @@ public class CustomSpecsPlugin extends PluginAdapter {
         _equal.setReturnType(_retEqual);
         topLevelClass.addMethod(_equal);
 
+        Method _like = new Method("_like");
+        _like.setVisibility(JavaVisibility.PUBLIC);
+        _like.addParameter(param_fieldKey);
+        _like.addParameter(param_filedValue);
+        String[] strParameter_like = {  "setField(fieldKey);",
+                                    "setValue(fieldValue);",
+                                    "setOperator(Operator.LIKE);",
+                                    "specs.add((root, query, builder) -> {",
+                                        "return  toPredicate(root, query, builder);",
+                                    "});",
+                                    "if (boolOps.size() < specs.size())",
+                                        "boolOps.add(Operator.AND);",
+                                    "return this;"};
+        List<String> stringList_like = Arrays.asList(strParameter_like);
+        Collection<String> stringCollection_like = stringList_like;
+        _like.addBodyLines(stringCollection_like);
+        _like.setReturnType(_retEqual);
+        topLevelClass.addMethod(_like);
 
-        Method _executeQuery= new Method("_executeQuery");
+        Method _greaterThan = new Method("_greaterThan");
+        _greaterThan.setVisibility(JavaVisibility.PUBLIC);
+        _greaterThan.addParameter(param_fieldKey);
+        _greaterThan.addParameter(param_filedValue);
+        String[] strParameter_greaterThan = {  "setField(fieldKey);",
+                                    "setValue(fieldValue);",
+                                    "setOperator(Operator.GREATER_THAN);",
+                                    "specs.add((root, query, builder) -> {",
+                                        "return  toPredicate(root, query, builder);",
+                                    "});",
+                                    "if (boolOps.size() < specs.size())",
+                                        "boolOps.add(Operator.AND);",
+                                    "return this;"};
+        List<String> stringList_greaterThan = Arrays.asList(strParameter_greaterThan);
+        Collection<String> stringCollection_greaterThan = stringList_greaterThan;
+        _greaterThan.addBodyLines(stringCollection_greaterThan);
+        _greaterThan.setReturnType(_retEqual);
+        topLevelClass.addMethod(_greaterThan);
+
+        Method _lessThan = new Method("_lessThan");
+        _lessThan.setVisibility(JavaVisibility.PUBLIC);
+        _lessThan.addParameter(param_fieldKey);
+        _lessThan.addParameter(param_filedValue);
+        String[] strParameter_less = {  "setField(fieldKey);",
+                                    "setValue(fieldValue);",
+                                    "setOperator(Operator.LESS_THAN);",
+                                    "specs.add((root, query, builder) -> {",
+                                        "return  toPredicate(root, query, builder);",
+                                    "});",
+                                    "if (boolOps.size() < specs.size())",
+                                        "boolOps.add(Operator.AND);",
+                                    "return this;"};
+        List<String> stringList_less = Arrays.asList(strParameter_less);
+        Collection<String> stringCollection_less = stringList_less;
+        _lessThan.addBodyLines(stringCollection_less);
+        _lessThan.setReturnType(_retEqual);
+        topLevelClass.addMethod(_lessThan);
+
+        Method _in = new Method("_in");
+        _in.setVisibility(JavaVisibility.PUBLIC);
+        _in.addParameter(param_fieldKey);
+        _in.addParameter(param_filedValue);
+        String[] strParameter_in = {  "setField(fieldKey);",
+                                    "setValue(fieldValue);",
+                                    "setOperator(Operator.IN);",
+                                    "specs.add((root, query, builder) -> {",
+                                        "return  toPredicate(root, query, builder);",
+                                    "});",
+                                    "if (boolOps.size() < specs.size())",
+                                        "boolOps.add(Operator.AND);",
+                                    "return this;"};
+        List<String> stringList_in = Arrays.asList(strParameter_in);
+        Collection<String> stringCollection_in = stringList_in;
+        _in.addBodyLines(stringCollection_in);
+        _in.setReturnType(_retEqual);
+        topLevelClass.addMethod(_in);
+
+        Method _executeQuery= new Method("_generateSpecifications");
         _executeQuery.setVisibility(JavaVisibility.PUBLIC);
         String[] strParameter7 = { 
             "Specification<T> combinedSpec = Specification.where(null);",

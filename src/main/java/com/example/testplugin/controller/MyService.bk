@@ -1,47 +1,29 @@
 package com.example.testplugin.controller;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.testplugin.model.TestUser;
 import com.example.testplugin.util.ValidationUtil;
 
-import ch.qos.logback.core.util.StringUtil;
-import io.micrometer.common.util.StringUtils;
-import jakarta.servlet.http.HttpServletRequest;
-
-/**
- * This is a generated Service for demonstration purposes.
- */
 @Service
-public class TestUserServiceImpl extends TestUserBaseService implements TestUserService {
+public class MyService extends TestUserService {
+
     /** This is an example repository. */
     private TestUserRepository repository;
 
     /** This is an example modelAssembler. */
     private TestUserModelAssembler assembler;
 
-    public static final String USER_LOGIN_STATE = "userLoginState";
+    public MyService() {
 
-    public static final int DEFAULT_ROLE = 0;
-
-    public static final int ADMIN_ROLE = 1;
-
-
-    public TestUserServiceImpl() {
-        super();
     }
 
     @Autowired
-    public TestUserServiceImpl(TestUserRepository repository, TestUserModelAssembler assembler) {
-        super(repository,assembler);
-        this.repository = repository;
-        this.assembler = assembler;
+    public MyService(TestUserRepository repository, TestUserModelAssembler assembler) {
+      super(repository, assembler);
+      this.repository = repository;
+      this.assembler = assembler;
     }
 
     @Override
@@ -72,7 +54,7 @@ public class TestUserServiceImpl extends TestUserBaseService implements TestUser
 
     @Override
     public TestUser doLogin(String userName, String userPassword, HttpServletRequest httpServletRequest) {
-        if(StringUtil.isNullOrEmpty(userName)) 
+        if(StringUtil.containsSpace(userName)) 
             return null;
 
         if(userName.length() < 4)
@@ -111,17 +93,5 @@ public class TestUserServiceImpl extends TestUserBaseService implements TestUser
         httpServletRequest.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
 
         return safetyUser;
-    }
-
-
-    public List<TestUser> searchUser(@RequestParam String username) {
-
-        if(!StringUtils.isNotBlank(username)) 
-            return null;
-
-        CustomSpecs<TestUser> customSpecs = new CustomSpecs<TestUser>();
-        customSpecs._like("username", username);
-
-        return repository.findAll(customSpecs._generateSpecifications());
     }
 }

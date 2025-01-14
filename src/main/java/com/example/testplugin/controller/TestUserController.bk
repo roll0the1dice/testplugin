@@ -5,14 +5,9 @@ import com.example.testplugin.model.request.TestUserLoginRequest;
 import com.example.testplugin.model.request.TestUserRegisterRequest;
 
 import ch.qos.logback.core.util.StringUtil;
-import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.aspectj.weaver.ast.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -25,8 +20,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 /**
  * This is a generated interface for demonstration purposes.
@@ -67,7 +60,7 @@ public class TestUserController {
         return service.deleteTestUser(id);
     }
 
-        @PostMapping("/register")
+    @PostMapping("/register")
     public String userRegister(@RequestBody TestUserRegisterRequest testUserRequest) {
         //TODO: process POST request
         if (testUserRequest == null)
@@ -95,28 +88,8 @@ public class TestUserController {
         if (StringUtil.isNullOrEmpty(userName) || StringUtil.isNullOrEmpty(userPassword))
             return null;
 
-        // List<TestUser> list =  service.searchUser(userName);
-
-        // for (TestUser testUser : list) {
-        //     System.out.println(testUser);
-        // }
-
         return service.doLogin(userName, userPassword, request);
     }
-
-    @GetMapping("/search")
-    public List<TestUser> searchUser(@RequestParam String username, HttpServletRequest request) {
-
-        Object userObj = request.getSession().getAttribute(TestUserServiceImpl.USER_LOGIN_STATE);
-        TestUser user = (TestUser)userObj;
-
-        if(user.getGender() != 1)
-            return new ArrayList<>();
-
-        if(!StringUtils.isNotBlank(username)) 
-            return new ArrayList<>();
-
-        return service.searchUser(username);
-    }
     
+
 }

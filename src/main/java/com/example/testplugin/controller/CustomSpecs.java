@@ -86,7 +86,55 @@ public class CustomSpecs<T>  implements Specification<T> {
         return this;
     }
 
-    public Specification<T> _executeQuery() {
+    public CustomSpecs<T> _like(String fieldKey, String fieldValue) {
+        setField(fieldKey);
+        setValue(fieldValue);
+        setOperator(Operator.LIKE);
+        specs.add((root, query, builder) -> {
+            return  toPredicate(root, query, builder);
+        });
+        if (boolOps.size() < specs.size())
+        boolOps.add(Operator.AND);
+        return this;
+    }
+
+    public CustomSpecs<T> _greaterThan(String fieldKey, String fieldValue) {
+        setField(fieldKey);
+        setValue(fieldValue);
+        setOperator(Operator.GREATER_THAN);
+        specs.add((root, query, builder) -> {
+            return  toPredicate(root, query, builder);
+        });
+        if (boolOps.size() < specs.size())
+        boolOps.add(Operator.AND);
+        return this;
+    }
+
+    public CustomSpecs<T> _lessThan(String fieldKey, String fieldValue) {
+        setField(fieldKey);
+        setValue(fieldValue);
+        setOperator(Operator.LESS_THAN);
+        specs.add((root, query, builder) -> {
+            return  toPredicate(root, query, builder);
+        });
+        if (boolOps.size() < specs.size())
+        boolOps.add(Operator.AND);
+        return this;
+    }
+
+    public CustomSpecs<T> _in(String fieldKey, String fieldValue) {
+        setField(fieldKey);
+        setValue(fieldValue);
+        setOperator(Operator.IN);
+        specs.add((root, query, builder) -> {
+            return  toPredicate(root, query, builder);
+        });
+        if (boolOps.size() < specs.size())
+        boolOps.add(Operator.AND);
+        return this;
+    }
+
+    public Specification<T> _generateSpecifications() {
         Specification<T> combinedSpec = Specification.where(null);
         assert(specs.size() == boolOps.size());
         for (int i = 0; i < specs.size() && i < boolOps.size(); i++) {

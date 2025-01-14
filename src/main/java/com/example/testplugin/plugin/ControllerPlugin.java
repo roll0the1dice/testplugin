@@ -84,7 +84,7 @@ public class ControllerPlugin extends PluginAdapter {
         topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.hateoas.EntityModel"));
         topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.hateoas.CollectionModel"));
         //topLevelClass.addImportedType(new FullyQualifiedJavaType("java.util.List"));
-        //topLevelClass.addImportedType(new FullyQualifiedJavaType("java.util.stream.Collectors"));
+        topLevelClass.addImportedType(new FullyQualifiedJavaType("jakarta.annotation.Resource"));
         topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.http.ResponseEntity"));
         topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.web.bind.annotation.RequestMapping"));
 
@@ -95,7 +95,7 @@ public class ControllerPlugin extends PluginAdapter {
         var field = new Field ("service", new FullyQualifiedJavaType(_modelName + "ServiceImpl"));
         field.setVisibility(JavaVisibility.PRIVATE);
         field.addJavaDocLine("/** This is an example service. */");
-        //field.addAnnotation("@Autowired");
+        field.addAnnotation("@Resource");
         topLevelClass.addField(field);
 
         // Add a private field
@@ -108,7 +108,7 @@ public class ControllerPlugin extends PluginAdapter {
         Method _constructor = new Method(_modelName + "Controller");
         _constructor.setConstructor(true);
         _constructor.setVisibility(JavaVisibility.PUBLIC);
-        _constructor.addAnnotation("@Autowired");
+        //_constructor.addAnnotation("@Autowired");
         _constructor.addParameter(new Parameter(new FullyQualifiedJavaType(_modelName + "ServiceImpl"), "service"));
         _constructor.addBodyLine("this.service = service;");
         topLevelClass.addMethod(_constructor);

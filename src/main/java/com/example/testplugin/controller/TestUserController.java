@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.weaver.ast.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -24,9 +23,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * This is a generated interface for demonstration purposes.
@@ -67,7 +65,7 @@ public class TestUserController {
         return service.deleteTestUser(id);
     }
 
-        @PostMapping("/register")
+    @PostMapping("/register")
     public String userRegister(@RequestBody TestUserRegisterRequest testUserRequest) {
         //TODO: process POST request
         if (testUserRequest == null)
@@ -95,12 +93,6 @@ public class TestUserController {
         if (StringUtil.isNullOrEmpty(userName) || StringUtil.isNullOrEmpty(userPassword))
             return null;
 
-        // List<TestUser> list =  service.searchUser(userName);
-
-        // for (TestUser testUser : list) {
-        //     System.out.println(testUser);
-        // }
-
         return service.doLogin(userName, userPassword, request);
     }
 
@@ -118,5 +110,11 @@ public class TestUserController {
 
         return service.searchUser(username);
     }
-    
+
+    @GetMapping("/current")
+    public ResponseEntity<?> getCurrent(HttpServletRequest httpServletRequest) {
+
+        return ResponseEntity.ok().body(service.getCurrent(httpServletRequest));
+    }
+
 }

@@ -88,7 +88,28 @@ public class TestUserController {
         if (StringUtil.isNullOrEmpty(userName) || StringUtil.isNullOrEmpty(userPassword))
             return null;
 
+        List<TestUser> list =  service.searchGender(0);
+
+        for (TestUser testUser : list) {
+            System.out.println(testUser);
+        }
+
         return service.doLogin(userName, userPassword, request);
+    }
+
+    @GetMapping("/search")
+    public List<TestUser> searchUser(@RequestParam String username, HttpServletRequest request) {
+
+        Object userObj = request.getSession().getAttribute(TestUserServiceImpl.USER_LOGIN_STATE);
+        TestUser user = (TestUser)userObj;
+
+        if(user.getGender() != 1)
+            return new ArrayList<>();
+
+        if(!StringUtils.isNotBlank(username)) 
+            return new ArrayList<>();
+
+        return service.searchUser(username);
     }
     
 

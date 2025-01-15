@@ -86,14 +86,11 @@ public class CustomSpecsPlugin extends PluginAdapter {
         topLevelClass.addImportedType(new FullyQualifiedJavaType("jakarta.persistence.criteria.Root"));
         topLevelClass.addImportedType(new FullyQualifiedJavaType("jakarta.persistence.criteria.Predicate"));
         topLevelClass.addImportedType(new FullyQualifiedJavaType("java.util.List"));
-        topLevelClass.addImportedType(new FullyQualifiedJavaType("java.util.LinkedList"));
+        topLevelClass.addImportedType(new FullyQualifiedJavaType("java.util.Stack"));
         topLevelClass.addImportedType(new FullyQualifiedJavaType("java.util.Collection"));
         topLevelClass.addImportedType(new FullyQualifiedJavaType("jakarta.persistence.criteria.CriteriaQuery"));
         topLevelClass.addImportedType(new FullyQualifiedJavaType("org.springframework.data.jpa.domain.Specification"));
 
-        FullyQualifiedJavaType specificationType = new FullyQualifiedJavaType("org.springframework.data.jpa.domain.Specification");
-        specificationType.addTypeArgument(new FullyQualifiedJavaType("T"));
-        topLevelClass.addSuperInterface(specificationType);
         topLevelClass.addTypeParameter(new TypeParameter("T"));
 
         topLevelClass.addAnnotation("@Data");
@@ -103,101 +100,82 @@ public class CustomSpecsPlugin extends PluginAdapter {
         topLevelClass.addInnerEnum(innerEnum);
 
         // Add a private field
-        var field = new Field ("field", new FullyQualifiedJavaType("java.lang.String"));
-        field.setVisibility(JavaVisibility.PRIVATE);
-        topLevelClass.addField(field);
-
-        // Add a private field
-        var field2 = new Field ("value", new FullyQualifiedJavaType("java.lang.Object"));
-        field2.setVisibility(JavaVisibility.PRIVATE);
-        field2.addJavaDocLine("/** This is an example. */");
-        //field2.addAnnotation("@Autowired");
-        topLevelClass.addField(field2);
-
-        // Add a private field
-        var field3 = new Field ("operator", new FullyQualifiedJavaType("Operator"));
-        field3.setVisibility(JavaVisibility.PRIVATE);
-        field3.addJavaDocLine("/** This is an example. */");
-        topLevelClass.addField(field3);
-
-        // // Add a private field
-        // var field4 = new Field ("AND", new FullyQualifiedJavaType("java.lang.Integer"));
-        // field4.setVisibility(JavaVisibility.PRIVATE);
-        // field4.setFinal(true);
-        // field4.addJavaDocLine("/** This is an example. */");
-        // topLevelClass.addField(field4);
-
-        // // Add a private field
-        // var field5 = new Field ("OR", new FullyQualifiedJavaType("java.lang.Integer"));
-        // field5.setVisibility(JavaVisibility.PRIVATE);
-        // field5.setFinal(true);
-        // field5.addJavaDocLine("/** This is an example. */");
-        // topLevelClass.addField(field5);
-
-        // Add a private field
-        FullyQualifiedJavaType _listSpecification = new FullyQualifiedJavaType("java.lang.LinkedList");
-        FullyQualifiedJavaType _specification =  new FullyQualifiedJavaType("org.springframework.data.jpa.domain.Specification");
-        _specification.addTypeArgument(new FullyQualifiedJavaType("T"));
-        _listSpecification.addTypeArgument(_specification);
-        var field6 = new Field ("specs", _listSpecification);
-        field6.setVisibility(JavaVisibility.PRIVATE);
-        field6.addJavaDocLine("/** This is an example. */");
-        topLevelClass.addField(field6);
-
-        // Add a private field
-        FullyQualifiedJavaType _listInteger = new FullyQualifiedJavaType("java.lang.LinkedList");
+        FullyQualifiedJavaType _listInteger = new FullyQualifiedJavaType("java.lang.Stack");
         _listInteger.addTypeArgument(new FullyQualifiedJavaType("Operator"));
         var field7 = new Field ("boolOps", _listInteger);
         field7.setVisibility(JavaVisibility.PRIVATE);
         field7.addJavaDocLine("/** This is an example. */");
         topLevelClass.addField(field7);
 
+        FullyQualifiedJavaType _listObject= new FullyQualifiedJavaType("java.lang.Stack");
+        _listObject.addTypeArgument(new FullyQualifiedJavaType("java.lang.Object"));
+        Field field = new Field ("valueList", _listObject);
+        field.setVisibility(JavaVisibility.PRIVATE);
+        field.addJavaDocLine("/** This is an example. */");
+        topLevelClass.addField(field);
+
+        _listObject= new FullyQualifiedJavaType("java.lang.Stack");
+        _listObject.addTypeArgument(new FullyQualifiedJavaType("java.lang.String"));
+        field = new Field ("fieldList", _listObject);
+        field.setVisibility(JavaVisibility.PRIVATE);
+        field.addJavaDocLine("/** This is an example. */");
+        topLevelClass.addField(field);
+
+        _listObject= new FullyQualifiedJavaType("java.lang.Stack");
+        _listObject.addTypeArgument(new FullyQualifiedJavaType("Operator"));
+        field = new Field ("compOpList", _listObject);
+        field.setVisibility(JavaVisibility.PRIVATE);
+        field.addJavaDocLine("/** This is an example. */");
+        topLevelClass.addField(field);
+
         Method _defaultconstructor = new Method("CustomSpecs");
         _defaultconstructor.setConstructor(true);
         _defaultconstructor.setVisibility(JavaVisibility.PUBLIC);
-        // _defaultconstructor.addBodyLine("AND = 0;");
-        // _defaultconstructor.addBodyLine("OR = 1;");
-        _defaultconstructor.addBodyLine("this.specs = new LinkedList<Specification<T>>();");
-        _defaultconstructor.addBodyLine("this.boolOps = new LinkedList<Operator>();");
+
+        _defaultconstructor.addBodyLine("this.boolOps = new Stack<Operator>();");
+        _defaultconstructor.addBodyLine("this.valueList = new Stack<Object>();");
+        _defaultconstructor.addBodyLine("this.fieldList = new Stack<String>();");
+        _defaultconstructor.addBodyLine("this.compOpList = new Stack<Operator>();");
         topLevelClass.addMethod(_defaultconstructor);
 
-        Method _toJpaPredicate = new Method("toPredicate");
+        Method _toJpaPredicate = new Method("_toPredicate");
         _toJpaPredicate.addAnnotation("@Nullable");
-        _toJpaPredicate.addAnnotation("@Override");
         _toJpaPredicate.setVisibility(JavaVisibility.PUBLIC);
-        FullyQualifiedJavaType _rootType = new FullyQualifiedJavaType("jakarta.persistence.criteria.Root");
-        _rootType.addTypeArgument(new FullyQualifiedJavaType("T"));
-        Parameter param1  = new Parameter(_rootType, "root");
+        FullyQualifiedJavaType _fieldKeyType = new FullyQualifiedJavaType("java.lang.String");
+        Parameter param1  = new Parameter(_fieldKeyType, "fieldKey");
         _toJpaPredicate.addParameter(param1);
-        FullyQualifiedJavaType _criteriaQuery = new FullyQualifiedJavaType("jakarta.persistence.criteria.CriteriaQuery");
-        _criteriaQuery.addTypeArgument(new FullyQualifiedJavaType("?"));
-        Parameter param2  = new Parameter(_criteriaQuery, "query");
-        //param2.addAnnotation("@Nullable");
+        FullyQualifiedJavaType _fieldValueQuery = new FullyQualifiedJavaType("java.lang.Object");
+        Parameter param2  = new Parameter(_fieldValueQuery, "fieldValue");
         _toJpaPredicate.addParameter(param2);
-        FullyQualifiedJavaType _criteriaBuilder = new FullyQualifiedJavaType("jakarta.persistence.criteria.CriteriaBuilder");
-        Parameter param3  = new Parameter(_criteriaBuilder, "cb");
+        FullyQualifiedJavaType _compOp = new FullyQualifiedJavaType("Operator");
+        Parameter param3  = new Parameter(_compOp, "compOp");
         _toJpaPredicate.addParameter(param3);
-        _toJpaPredicate.setReturnType(new FullyQualifiedJavaType("jakarta.persistence.criteria.Predicate"));
-        String[] strParameter3 = {"switch (getOperator()) {",
+        FullyQualifiedJavaType _ret_toJpaPredicate = new FullyQualifiedJavaType("org.springframework.data.jpa.domain.Specification");
+        _ret_toJpaPredicate.addTypeArgument(new FullyQualifiedJavaType("T"));
+        _toJpaPredicate.setReturnType(_ret_toJpaPredicate);
+        String[] strParameter3 = {
+            "return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {",
+            "switch (compOp) {",
             "case EQUAL:",
-                "return cb.equal(root.get(getField()), getValue());",
+                "return cb.equal(root.get(fieldKey), fieldValue);",
             "case LIKE:",
-                "return cb.like(root.get(getField()), \"%\" + getValue() + \"%\");",
+                "return cb.like(root.get(fieldKey), \"%\" + fieldValue + \"%\");",
             "case GREATER_THAN:",
-                "return cb.greaterThan(root.get(getField()), (Comparable) getValue());",
+                "return cb.greaterThan(root.get(fieldKey), (Comparable) fieldValue);",
             "case LESS_THAN:",
-                "return cb.lessThan(root.get(getField()), (Comparable) getValue());",
+                "return cb.lessThan(root.get(fieldKey), (Comparable) fieldValue);",
             "case IN:",
-                "CriteriaBuilder.In<Object> in = cb.in(root.get(getField()));",
-                "if (getValue() instanceof Collection) {",
-                    "for (Object value : (Collection<?>) getValue()) {",
+                "CriteriaBuilder.In<Object> in = cb.in(root.get(fieldKey));",
+                "if (fieldValue instanceof Collection) {",
+                    "for (Object value : (Collection<?>) fieldValue) {",
                         "in.value(value);",
                     "}",
                 "}",
                 "return in;",
             "default:",
-                "throw new UnsupportedOperationException(\"Unsupported operator: \" + getOperator());",
-            "}"
+                "throw new UnsupportedOperationException(\"Unsupported operator: \" + compOp);",
+            "}",
+            "};"
         };
         List<String> stringList3 = Arrays.asList(strParameter3);
         Collection<String> stringCollection3 = stringList3;
@@ -207,9 +185,14 @@ public class CustomSpecsPlugin extends PluginAdapter {
         
         Method _and = new Method("_and");
         _and.setVisibility(JavaVisibility.PUBLIC);
-        String[] strParameter4 = {"if (boolOps.size() < specs.size())",
-                                    "boolOps.add(Operator.AND);",
-                                    "return this;"};
+        String[] strParameter4 = {"assert(valueList.size() == boolOps.size());",
+            "assert(fieldList.size() == valueList.size());",
+            "assert(compOpList.size() == fieldList.size());",
+            "if(!boolOps.empty()) {",
+                "boolOps.pop();",
+                "boolOps.push(Operator.AND);",
+            "}",
+            "return this;"};
         List<String> stringList4 = Arrays.asList(strParameter4);
         Collection<String> stringCollection4 = stringList4;
         _and.addBodyLines(stringCollection4);
@@ -220,9 +203,14 @@ public class CustomSpecsPlugin extends PluginAdapter {
 
         Method _or = new Method("_or");
         _or.setVisibility(JavaVisibility.PUBLIC);
-        String[] strParameter5 = {"if (boolOps.size() < specs.size())",
-                                    "boolOps.add(Operator.OR);",
-                                    "return this;"};
+        String[] strParameter5 = {        "assert(valueList.size() == boolOps.size());",
+            "assert(fieldList.size() == valueList.size());",
+            "assert(compOpList.size() == fieldList.size());",
+            "if(!boolOps.empty()) {",
+                "boolOps.pop();",
+               "boolOps.push(Operator.OR);",
+            "}",
+            "return this;"};
         List<String> stringList5 = Arrays.asList(strParameter5);
         Collection<String> stringCollection5 = stringList5;
         _or.addBodyLines(stringCollection5);
@@ -237,18 +225,18 @@ public class CustomSpecsPlugin extends PluginAdapter {
         Parameter param_fieldKey  = new Parameter(_filedKey, "fieldKey");
         FullyQualifiedJavaType _filedValue = new FullyQualifiedJavaType("java.lang.Object");
         //_filedKey.addTypeArgument(new FullyQualifiedJavaType("?"));
-        Parameter param_filedValue  = new Parameter(_filedKey, "fieldValue");
+        Parameter param_filedValue  = new Parameter(_filedValue, "fieldValue");
         _equal.addParameter(param_fieldKey);
         _equal.addParameter(param_filedValue);
-        String[] strParameter6 = {  "setField(fieldKey);",
-                                    "setValue(fieldValue);",
-                                    "setOperator(Operator.EQUAL);",
-                                    "specs.add((root, query, builder) -> {",
-                                        "return  toPredicate(root, query, builder);",
-                                    "});",
-                                    "if (boolOps.size() < specs.size())",
-                                        "boolOps.add(Operator.AND);",
-                                    "return this;"};
+        String[] strParameter6 = {"if (fieldValue == null || fieldValue == null) return this;",
+        "fieldList.push(fieldKey);",
+        "valueList.push(fieldValue);",
+        "compOpList.push(Operator.EQUAL);",
+        "assert(fieldList.size() == valueList.size());",
+        "assert(compOpList.size() == fieldList.size());",
+        "if (boolOps.size() < fieldList.size()) ",
+        "boolOps.push(Operator.AND);",
+        "return this;"};
         List<String> stringList6 = Arrays.asList(strParameter6);
         Collection<String> stringCollection6 = stringList6;
         _equal.addBodyLines(stringCollection6);
@@ -259,15 +247,15 @@ public class CustomSpecsPlugin extends PluginAdapter {
         _like.setVisibility(JavaVisibility.PUBLIC);
         _like.addParameter(param_fieldKey);
         _like.addParameter(param_filedValue);
-        String[] strParameter_like = {  "setField(fieldKey);",
-                                    "setValue(fieldValue);",
-                                    "setOperator(Operator.LIKE);",
-                                    "specs.add((root, query, builder) -> {",
-                                        "return  toPredicate(root, query, builder);",
-                                    "});",
-                                    "if (boolOps.size() < specs.size())",
-                                        "boolOps.add(Operator.AND);",
-                                    "return this;"};
+        String[] strParameter_like = { "if (fieldValue == null || fieldValue == null) return this;",
+        "fieldList.push(fieldKey);",
+        "valueList.push(fieldValue);",
+        "compOpList.push(Operator.LIKE);",
+        "assert(fieldList.size() == valueList.size());",
+        "assert(compOpList.size() == fieldList.size());",
+        "if (boolOps.size() < fieldList.size()) ",
+        "boolOps.push(Operator.AND);",
+        "return this;"};
         List<String> stringList_like = Arrays.asList(strParameter_like);
         Collection<String> stringCollection_like = stringList_like;
         _like.addBodyLines(stringCollection_like);
@@ -278,15 +266,15 @@ public class CustomSpecsPlugin extends PluginAdapter {
         _greaterThan.setVisibility(JavaVisibility.PUBLIC);
         _greaterThan.addParameter(param_fieldKey);
         _greaterThan.addParameter(param_filedValue);
-        String[] strParameter_greaterThan = {  "setField(fieldKey);",
-                                    "setValue(fieldValue);",
-                                    "setOperator(Operator.GREATER_THAN);",
-                                    "specs.add((root, query, builder) -> {",
-                                        "return  toPredicate(root, query, builder);",
-                                    "});",
-                                    "if (boolOps.size() < specs.size())",
-                                        "boolOps.add(Operator.AND);",
-                                    "return this;"};
+        String[] strParameter_greaterThan = {"if (fieldValue == null || fieldValue == null) return this;",
+        "fieldList.push(fieldKey);",
+        "valueList.push(fieldValue);",
+        "compOpList.push(Operator.GREATER_THAN);",
+        "assert(fieldList.size() == valueList.size());",
+        "assert(compOpList.size() == fieldList.size());",
+        "if (boolOps.size() < fieldList.size()) ",
+        "boolOps.push(Operator.AND);",
+        "return this;"};
         List<String> stringList_greaterThan = Arrays.asList(strParameter_greaterThan);
         Collection<String> stringCollection_greaterThan = stringList_greaterThan;
         _greaterThan.addBodyLines(stringCollection_greaterThan);
@@ -297,15 +285,15 @@ public class CustomSpecsPlugin extends PluginAdapter {
         _lessThan.setVisibility(JavaVisibility.PUBLIC);
         _lessThan.addParameter(param_fieldKey);
         _lessThan.addParameter(param_filedValue);
-        String[] strParameter_less = {  "setField(fieldKey);",
-                                    "setValue(fieldValue);",
-                                    "setOperator(Operator.LESS_THAN);",
-                                    "specs.add((root, query, builder) -> {",
-                                        "return  toPredicate(root, query, builder);",
-                                    "});",
-                                    "if (boolOps.size() < specs.size())",
-                                        "boolOps.add(Operator.AND);",
-                                    "return this;"};
+        String[] strParameter_less = {"if (fieldValue == null || fieldValue == null) return this;",
+        "fieldList.push(fieldKey);",
+        "valueList.push(fieldValue);",
+        "compOpList.push(Operator.LESS_THAN);",
+        "assert(fieldList.size() == valueList.size());",
+        "assert(compOpList.size() == fieldList.size());",
+        "if (boolOps.size() < fieldList.size()) ",
+        "boolOps.push(Operator.AND);",
+        "return this;"};
         List<String> stringList_less = Arrays.asList(strParameter_less);
         Collection<String> stringCollection_less = stringList_less;
         _lessThan.addBodyLines(stringCollection_less);
@@ -316,15 +304,15 @@ public class CustomSpecsPlugin extends PluginAdapter {
         _in.setVisibility(JavaVisibility.PUBLIC);
         _in.addParameter(param_fieldKey);
         _in.addParameter(param_filedValue);
-        String[] strParameter_in = {  "setField(fieldKey);",
-                                    "setValue(fieldValue);",
-                                    "setOperator(Operator.IN);",
-                                    "specs.add((root, query, builder) -> {",
-                                        "return  toPredicate(root, query, builder);",
-                                    "});",
-                                    "if (boolOps.size() < specs.size())",
-                                        "boolOps.add(Operator.AND);",
-                                    "return this;"};
+        String[] strParameter_in = {"if (fieldValue == null || fieldValue == null) return this;",
+            "fieldList.push(fieldKey);",
+            "valueList.push(fieldValue);",
+            "compOpList.push(Operator.IN);",
+            "assert(fieldList.size() == valueList.size());",
+            "assert(compOpList.size() == fieldList.size());",
+            "if (boolOps.size() < fieldList.size()) ",
+            "boolOps.push(Operator.AND);",
+            "return this;"};
         List<String> stringList_in = Arrays.asList(strParameter_in);
         Collection<String> stringCollection_in = stringList_in;
         _in.addBodyLines(stringCollection_in);
@@ -335,27 +323,37 @@ public class CustomSpecsPlugin extends PluginAdapter {
         _executeQuery.setVisibility(JavaVisibility.PUBLIC);
         String[] strParameter7 = { 
             "Specification<T> combinedSpec = Specification.where(null);",
-            "assert(specs.size() == boolOps.size());",
-            "for (int i = 0; i < specs.size() && i < boolOps.size(); i++) {",
-              "var spec = specs.remove(0);",
-              "var op = boolOps.remove(0);",
-              "switch (op) {",
+            "assert(valueList.size() == boolOps.size());",
+            "assert(fieldList.size() == valueList.size());",
+            "assert(compOpList.size() == fieldList.size());",
+            "while (!boolOps.isEmpty() && !valueList.isEmpty() && !fieldList.isEmpty()) {",
+                "Operator boolOp = boolOps.pop();",
+                "Object fieldValue = valueList.pop();",
+                "String fieldKey = fieldList.pop();",
+                "Operator compOp = compOpList.pop();",
+                "Specification<T> _tmpSpec =  _toPredicate(fieldKey, fieldValue, compOp);",
+                "if (_tmpSpec == null) ",
+                    "throw new UnsupportedOperationException(\"Unsupported toPredicate\");",
+                "switch (boolOp) {",
                 "case OR:",
-                  "combinedSpec = combinedSpec.or(spec);",
-                  "break;",
+                    "combinedSpec = _tmpSpec.or(combinedSpec);",
+                    "break;",
                 "case AND:",
-                "default:",
-                  "combinedSpec = combinedSpec.and(spec);",
-                  "break;",
-              "}",
-            "}",
-            "return combinedSpec;"};
+                    "default:",
+                        "combinedSpec = _tmpSpec.and(combinedSpec);",
+                        "break;",
+                    "}",
+                "}",
+                "assert(valueList.size() == boolOps.size());",
+                "assert(fieldList.size() == valueList.size());",
+                "assert(compOpList.size() == fieldList.size());",
+                "return combinedSpec;"};
         List<String> stringList7 = Arrays.asList(strParameter7);
         Collection<String> stringCollection7 = stringList7;
         _executeQuery.addBodyLines(stringCollection7);
         FullyQualifiedJavaType _retexecuteQuery = new FullyQualifiedJavaType("org.springframework.data.jpa.domain.Specification");
         _retexecuteQuery.addTypeArgument(new FullyQualifiedJavaType("T"));
-        _and.setReturnType(_retexecuteQuery);
+        _executeQuery.setReturnType(_retexecuteQuery);
         _executeQuery.setReturnType(_retexecuteQuery);
         topLevelClass.addMethod(_executeQuery);
 

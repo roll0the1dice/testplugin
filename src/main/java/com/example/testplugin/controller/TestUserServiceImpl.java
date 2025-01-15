@@ -1,5 +1,6 @@
 package com.example.testplugin.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -26,12 +27,7 @@ public class TestUserServiceImpl extends TestUserBaseService implements TestUser
     /** This is an example modelAssembler. */
     private TestUserModelAssembler assembler;
 
-    public static final String USER_LOGIN_STATE = "userLoginState";
-
-    public static final int DEFAULT_ROLE = 0;
-
-    public static final int ADMIN_ROLE = 1;
-
+    public static String USER_LOGIN_STATE = "USER_LOGIN_STATE";
 
     public TestUserServiceImpl() {
         super();
@@ -44,7 +40,7 @@ public class TestUserServiceImpl extends TestUserBaseService implements TestUser
         this.assembler = assembler;
     }
 
-    @Override
+    //@Override
     public String registerUser(String userName, String userPassword, String checkPassword) {
         // 验证用户名和密码是否包含特殊字符
         if (ValidationUtil.hasSpecialCharacters(userName)) {
@@ -70,7 +66,7 @@ public class TestUserServiceImpl extends TestUserBaseService implements TestUser
         return "用户注册成功";
     }
 
-    @Override
+    //@Override
     public TestUser doLogin(String userName, String userPassword, HttpServletRequest httpServletRequest) {
         if(StringUtil.isNullOrEmpty(userName)) 
             return null;
@@ -89,6 +85,7 @@ public class TestUserServiceImpl extends TestUserBaseService implements TestUser
 
         CustomSpecs<TestUser> customSpecs = new CustomSpecs<TestUser>();
         customSpecs._equal("username", userName)._equal("userpassword", userPassword);
+        //customSpecs._like("userpassword", "123");
 
         Optional<TestUser> user = repository.findOne(customSpecs._generateSpecifications());
  
@@ -103,7 +100,9 @@ public class TestUserServiceImpl extends TestUserBaseService implements TestUser
         safetyUser.setGender(user.get().getGender());
         safetyUser.setPhone("");
         safetyUser.setEmail("");
-        safetyUser.setUserstate(0);
+        safetyUser.setAvatarurl("");
+        safetyUser.setUserpassword("");
+        safetyUser.setUserState(user.get().getUserState());
         safetyUser.setCreatetime(new Date());
         safetyUser.setUpdatetime(new Date());
         safetyUser.setIsdelete((byte)0);
@@ -112,7 +111,6 @@ public class TestUserServiceImpl extends TestUserBaseService implements TestUser
 
         return safetyUser;
     }
-
 
     public List<TestUser> searchUser(@RequestParam String username) {
 
@@ -123,5 +121,28 @@ public class TestUserServiceImpl extends TestUserBaseService implements TestUser
         customSpecs._like("username", username);
 
         return repository.findAll(customSpecs._generateSpecifications());
+    }
+
+    public List<TestUser> searchUserState(@RequestParam Integer userState) {
+
+        if(userState == null) 
+            return new ArrayList<>();
+
+        CustomSpecs<TestUser> customSpecs = new CustomSpecs<TestUser>();
+        customSpecs._greaterThan("userState", userState);
+
+        return repository.findAll(customSpecs._generateSpecifications());
+    }
+
+    public TestUser getCurrent(HttpServletRequest httpServletRequest) {
+
+        Object obj = httpServletRequest.getSession().getAttribute(USER_LOGIN_STATE);
+        
+        // 检查类型并进行转换
+        if (obj instanceof TestUser) {
+            return (TestUser) obj; // 安全类型转换
+        } else {
+            return null; // 处理未找到或类型不匹配的情况
+        }
     }
 }

@@ -6,9 +6,13 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
+
 import lombok.Data;
+import lombok.val;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
@@ -17,24 +21,36 @@ import org.springframework.lang.Nullable;
  * This is a generated BaseService for demonstration purposes.
  */
 @Data
-public class CustomSpecs<T>  {
+public class CustomSpecs<T> {
+    private String field;
+
+    /** This is an example. */
+    private Object value;
+
+    /** This is an example. */
+    private Operator operator;
+
+    /** This is an example. */
+    private Stack<Specification<T>> specs;
+
     /** This is an example. */
     private Stack<Operator> boolOps;
 
-    /** This is an example. */
     private Stack<Object> valueList;
 
-    /** This is an example. */
     private Stack<String> fieldList;
 
-    /** This is an example. */
     private Stack<Operator> compOpList;
 
     public CustomSpecs() {
+        this.specs = new Stack<Specification<T>>();
         this.boolOps = new Stack<Operator>();
         this.valueList = new Stack<Object>();
         this.fieldList = new Stack<String>();
         this.compOpList = new Stack<Operator>();
+        this.operator = null;
+        this.value = null;
+        this.field = "";
     }
 
     @Nullable
@@ -51,16 +67,16 @@ public class CustomSpecs<T>  {
                             return cb.lessThan(root.get(fieldKey), (Comparable) fieldValue);
                             case IN:
                                 CriteriaBuilder.In<Object> in = cb.in(root.get(fieldKey));
-                                if (fieldValue instanceof Collection) {
+                                if (getValue() instanceof Collection) {
                                     for (Object value : (Collection<?>) fieldValue) {
                                         in.value(value);
                                     }
                                 }
                                 return in;
                                 default:
-                                    throw new UnsupportedOperationException("Unsupported operator: " + compOp);
+                                    throw new UnsupportedOperationException("Unsupported operator: " + getOperator());
                                 }
-                            };
+                        };
     }
 
     public CustomSpecs<T> _and() {
@@ -69,7 +85,7 @@ public class CustomSpecs<T>  {
         assert(compOpList.size() == fieldList.size());
         if(!boolOps.empty()) {
             boolOps.pop();
-            boolOps.push(Operator.AND);
+            boolOps.add(Operator.AND);
         }
         return this;
     }
@@ -80,76 +96,85 @@ public class CustomSpecs<T>  {
         assert(compOpList.size() == fieldList.size());
         if(!boolOps.empty()) {
             boolOps.pop();
-            boolOps.push(Operator.OR);
+            boolOps.add(Operator.OR);
         }
         return this;
     }
 
-    public CustomSpecs<T> _equal(String fieldKey, Object fieldValue) {
+
+    public CustomSpecs<T> _equal(String fieldKey, String fieldValue) {
         if (fieldValue == null || fieldValue == null) return this;
-        fieldList.push(fieldKey);
-        valueList.push(fieldValue);
-        compOpList.push(Operator.EQUAL);
+        fieldList.add(fieldKey);
+        valueList.add(fieldValue);
+        compOpList.add(Operator.EQUAL);
         assert(fieldList.size() == valueList.size());
         assert(compOpList.size() == fieldList.size());
         if (boolOps.size() < fieldList.size()) 
-        boolOps.push(Operator.AND);
+        boolOps.add(Operator.AND);
         return this;
     }
 
-    public CustomSpecs<T> _like(String fieldKey, Object fieldValue) {
+    public CustomSpecs<T> _like(String fieldKey, String fieldValue) {
         if (fieldValue == null || fieldValue == null) return this;
-        fieldList.push(fieldKey);
-        valueList.push(fieldValue);
-        compOpList.push(Operator.LIKE);
+        fieldList.add(fieldKey);
+        valueList.add(fieldValue);
+        compOpList.add(Operator.LIKE);
         assert(fieldList.size() == valueList.size());
         assert(compOpList.size() == fieldList.size());
         if (boolOps.size() < fieldList.size()) 
-        boolOps.push(Operator.AND);
+        boolOps.add(Operator.AND);
         return this;
     }
 
     public CustomSpecs<T> _greaterThan(String fieldKey, Object fieldValue) {
         if (fieldValue == null || fieldValue == null) return this;
-        fieldList.push(fieldKey);
-        valueList.push(fieldValue);
-        compOpList.push(Operator.GREATER_THAN);
+        fieldList.add(fieldKey);
+        valueList.add(fieldValue);
+        compOpList.add(Operator.GREATER_THAN);
         assert(fieldList.size() == valueList.size());
         assert(compOpList.size() == fieldList.size());
         if (boolOps.size() < fieldList.size()) 
-        boolOps.push(Operator.AND);
+        boolOps.add(Operator.AND);
         return this;
     }
 
-    public CustomSpecs<T> _lessThan(String fieldKey, Object fieldValue) {
+    public CustomSpecs<T> _lessThan(String fieldKey, String fieldValue) {
         if (fieldValue == null || fieldValue == null) return this;
-        fieldList.push(fieldKey);
-        valueList.push(fieldValue);
-        compOpList.push(Operator.LESS_THAN);
+        fieldList.add(fieldKey);
+        valueList.add(fieldValue);
+        compOpList.add(Operator.LESS_THAN);
+        
         assert(fieldList.size() == valueList.size());
         assert(compOpList.size() == fieldList.size());
+
         if (boolOps.size() < fieldList.size()) 
-        boolOps.push(Operator.AND);
+        boolOps.add(Operator.AND);
         return this;
     }
 
-    public CustomSpecs<T> _in(String fieldKey, Object fieldValue) {
+    public CustomSpecs<T> _in(String fieldKey, String fieldValue) {
         if (fieldValue == null || fieldValue == null) return this;
-        fieldList.push(fieldKey);
-        valueList.push(fieldValue);
-        compOpList.push(Operator.IN);
+        fieldList.add(fieldKey);
+        valueList.add(fieldValue);
+        compOpList.add(Operator.IN);
+        
         assert(fieldList.size() == valueList.size());
         assert(compOpList.size() == fieldList.size());
+
         if (boolOps.size() < fieldList.size()) 
-        boolOps.push(Operator.AND);
+        boolOps.add(Operator.AND);
         return this;
     }
 
     public Specification<T> _generateSpecifications() {
         Specification<T> combinedSpec = Specification.where(null);
+        
         assert(valueList.size() == boolOps.size());
         assert(fieldList.size() == valueList.size());
         assert(compOpList.size() == fieldList.size());
+
+        System.out.printf("----------------%d %d %d\n", boolOps.size(), valueList.size(), fieldList.size());
+
         while (!boolOps.isEmpty() && !valueList.isEmpty() && !fieldList.isEmpty()) {
             Operator boolOp = boolOps.pop();
             Object fieldValue = valueList.pop();
@@ -157,9 +182,10 @@ public class CustomSpecs<T>  {
             Operator compOp = compOpList.pop();
             Specification<T> _tmpSpec =  _toPredicate(fieldKey, fieldValue, compOp);
             if (_tmpSpec == null) 
-            throw new UnsupportedOperationException("Unsupported toPredicate");
+                throw new UnsupportedOperationException("Unsupported toPredicate");
             switch (boolOp) {
             case OR:
+                System.out.println("************************cao ni ma");
                 combinedSpec = _tmpSpec.or(combinedSpec);
                 break;
             case AND:
@@ -168,9 +194,13 @@ public class CustomSpecs<T>  {
                     break;
                 }
             }
-            assert(valueList.size() == boolOps.size());
-            assert(fieldList.size() == valueList.size());
-            assert(compOpList.size() == fieldList.size());
+
+            System.out.printf("################%d %d %d\n", boolOps.size(), valueList.size(), fieldList.size());
+
+            assert(specs.size() == boolOps.size());
+            assert(specs.size() == valueList.size());
+            assert(specs.size() == fieldList.size());
+
             return combinedSpec;
     }
 
